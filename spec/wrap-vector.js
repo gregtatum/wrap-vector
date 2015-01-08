@@ -1,6 +1,6 @@
-var v = require("../Vector");
+var v = require("../lib/wrap-vector");
 
-describe("wrapped-vector", function() {
+describe("wrap-vector", function() {
 	
 	beforeEach(function() {
 		
