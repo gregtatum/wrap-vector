@@ -39,10 +39,9 @@ I didn't want to mutate any native array structures but provide both a functiona
 	position.y = 10;
 	position.z = 15;
 	
-	
 	console.log( position.value )
 	//[5,10,15]
 
 ### Caveats
 
-I haven't done any benchmarking for speeds yet. So far I haven't done anything with this other than make some tests pass. I'd also like to factor out any dependencies like lodash. There are a lot more useful methods to add to the wrapper. I'd also like to make it so that you can pass a wrapped value to any function and it'll sort itself out. Currently it has to be an unwrapped array.
+I haven't done any benchmarking for speeds yet. So far I haven't done anything with this other than make some tests pass. I'd also like to factor out any dependencies like lodash. There are a lot more useful methods to add to the wrapper. I'd also like to make it so that you can pass a wrapped value to any function and it'll sort itself out. Currently it has to be an unwrapped array. The tests passed in node, Chrome, Safari, and Firefox on my Mac.
