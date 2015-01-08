@@ -1,4 +1,4 @@
-var _ = require('./underscore-min');
+var _ = require('lodash');
 
 function each( array, iteratee ) {
 	
@@ -32,71 +32,21 @@ function restEach( array, iteratee ) {
 	return array;
 }
 
-var combineVectors = (function() {
-	
-	var memo = [];
-	
-	return function combineVectors( args, func ) {
-		
-		var length = args[1].length;
-		var vector = args[0];
-		
-		memo.length = length;
-	
-		each( result, function ensureResultsBlank( value, i ) {
-			result[i] = 0;
-		});
-		
-		//Perform addition
-		restEach( args, function performCombineVectors( v2 ) {
-			
-			var i = 0,
-				il = args.length - 1;
-			
-			while( ++i < length ) {
-				args[i]
-			}
-			each(v2, function() {
-				
-			});
-		});
-	}
-	
-})();
-
-
-var properties = {
+var v = {
 	
 	set : function( vector /* x, y, z, ... */ ) {
 		
-		restEach( arguments, function( arg, i ) {
-			vector[i] = arg;
-		});
+		var i = 0;
+			il = arguments.length;
+			
+		while( ++i < il ) {
+			vector[i-1] = arguments[i];
+		}
 		
 		return vector;
 	},
 	
-	x : function( vector, x ) {
-		vector[0] = x;
-		return vector;
-	},
-	
-	y : function( vector, y ) {
-		vector[1] = y;
-		return vector;
-	},
-	
-	z : function( vector, z ) {
-		vector[2] = z;
-		return vector;
-	},
-	
-	w : function( vector, w ) {
-		vector[3] = w;
-		return vector;
-	},
-	
-	addTo : function( vector, v2 ) {
+	addOn : function( vector, v2 ) {
 		
 		var i = -1,
 			il = v2.length;
@@ -117,8 +67,8 @@ var properties = {
 					
 			var dimensions = arguments[1].length;			
 			
-			//Set
-			properties.copy( memo, arguments[1] );
+			//Set memo
+			v.copy( memo, arguments[1] );
 			
 			var vectorIndex = 1,
 				dimensionIndex,
@@ -132,7 +82,7 @@ var properties = {
 				}
 			}
 			
-			properties.copy( vector, memo, dimensions );
+			v.copy( vector, memo, dimensions );
 		
 			return vector;
 		}
@@ -153,9 +103,9 @@ var properties = {
 			vector[i] = v2[i];
 		}
 		
+		return vector;
+		
 	},
-	
-
 	
 	multiply : function() {
 		
@@ -166,7 +116,7 @@ var properties = {
 			var dimensions = arguments[1].length;			
 			
 			//Set
-			properties.copy( memo, arguments[1] );
+			v.copy( memo, arguments[1] );
 			
 			var vectorIndex = 1,
 				dimensionIndex,
@@ -180,7 +130,7 @@ var properties = {
 				}
 			}
 			
-			properties.copy( vector, memo, dimensions );
+			v.copy( vector, memo, dimensions );
 		
 			return vector;
 		}
@@ -199,8 +149,23 @@ var properties = {
 	
 	multiplyScalar : function( vector, value ) {
 		
-		for( var i=0, il = vector.length; i < il; i++ ) {
+		var i = -1;
+			il = vector.length;
+			
+		while( ++i < il ) {
 			vector[i] *= value;
+		}
+		return vector;
+		
+	},
+	
+	addScalar : function( vector, value ) {
+		
+		var i = -1;
+			il = vector.length;
+			
+		while( ++i < il ) {
+			vector[i] += value;
 		}
 		return vector;
 		
@@ -208,10 +173,9 @@ var properties = {
 	
 };
 
-var Vector = function( argument ) {
+var wrapVector = function( argument ) {
 	
 	var vector;
-	
 
 	if( _.isArray( argument ) ) {
 		
@@ -226,27 +190,52 @@ var Vector = function( argument ) {
 		}
 		
 	}
+
+	var instance = {};
 	
-	var scope = this;
-	
-	_.reduce( properties, function( memo, func, key ) {
+	_.each( v, function( func, key ) {
 		
-		scope[key] = function() {
+		instance[key] = function() {
 			
 			var result = _.partial( func, vector ).apply( null, arguments);
 			
 			if( result !== vector ) return result;
 			
-			return scope;
+			return instance
 		};
 		
-	}, scope);
+	});
+
+
+	//todo: debug
 	
-	scope.value = vector;
+	Object.defineProperties( instance, {
+		"x": {
+			enumerable : false,
+			get : function() { return vector[0]; },
+			set : function(val) { vector[0] = val; }
+		},
+		"y": {
+			enumerable : false,
+			get : function() { return vector[1]; },
+			set : function(val) { vector[1] = val; }
+		},
+		"z": {
+			enumerable : false,
+			get : function() { return vector[2]; },
+			set : function(val) { vector[2] = val; }
+		},
+		"w": {
+			enumerable : false,
+			get : function() { return vector[3]; },
+			set : function(val) { vector[3] = val; }
+		}
+	});
 	
-	return scope;
+	instance.value = vector;
+	return instance;
 }
 
-_.extend( Vector, properties );
+_.extend( wrapVector, v );
 
-module.exports = Vector;
+module.exports = wrapVector;
