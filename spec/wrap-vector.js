@@ -380,7 +380,4 @@ describe("wrap-vector", function() {
 		
 	});
 	
-	
-	
-	
 });
